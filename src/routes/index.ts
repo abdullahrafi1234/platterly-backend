@@ -1,9 +1,10 @@
 import { Router } from "express";
+import { AuthRoutes } from "../modules/auth/auth.route";
 
 const router = Router();
 
 const moduleRoutes: { path: string; route: Router }[] = [
-  // auth, meal, order routes will be added here
+  { path: "/auth", route: AuthRoutes },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
