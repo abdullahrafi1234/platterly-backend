@@ -1,3 +1,4 @@
+import { AdminRoutes } from "@/modules/admin/admin.route";
 import { CategoryRoutes } from "@/modules/category/category.route";
 import { MealRoutes } from "@/modules/meal/meal.route";
 import { OrderRoutes } from "@/modules/order/order.route";
@@ -13,6 +14,7 @@ const moduleRoutes: { path: string; route: Router }[] = [
   { path: "/meals", route: MealRoutes },
   { path: "/orders", route: OrderRoutes },
   { path: "/reviews", route: ReviewRoutes },
+  { path: "/admin", route: AdminRoutes },
 ];
 //
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
