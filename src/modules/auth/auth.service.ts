@@ -93,7 +93,26 @@ const login = async (payload: LoginInput) => {
   return { user: userWithoutPassword, token };
 };
 
+const updateProfile = async (
+  userId: string,
+  payload: { name?: string; phone?: string; address?: string },
+) => {
+  return prisma.user.update({
+    where: { id: userId },
+    data: payload,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      phone: true,
+      address: true,
+    },
+  });
+};
+
 export const AuthService = {
   register,
   login,
+  updateProfile,
 };
