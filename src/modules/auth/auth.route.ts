@@ -20,6 +20,13 @@ router.post(
 
 router.post("/logout", AuthController.logout);
 
+router.patch(
+  "/me",
+  authenticate,
+  validateRequest(AuthValidation.updateProfileSchema),
+  AuthController.updateProfile,
+);
+
 router.get("/me", authenticate, AuthController.getMe);
 
 export const AuthRoutes = router;
