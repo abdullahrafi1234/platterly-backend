@@ -46,6 +46,16 @@ const logout = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateProfile = catchAsync(async (req: Request, res: Response) => {
+  const result = await AuthService.updateProfile(req.user!.id, req.body);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Profile updated successfully",
+    data: result,
+  });
+});
+
 const getMe = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: 200,
@@ -59,5 +69,6 @@ export const AuthController = {
   register,
   login,
   logout,
+  updateProfile,
   getMe,
 };
