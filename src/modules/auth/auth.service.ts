@@ -111,8 +111,23 @@ const updateProfile = async (
   });
 };
 
+const getMe = async (userId: string) => {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      phone: true,
+      address: true,
+    },
+  });
+};
+
 export const AuthService = {
   register,
   login,
   updateProfile,
+  getMe,
 };

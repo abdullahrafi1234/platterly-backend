@@ -57,11 +57,12 @@ const updateProfile = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getMe = catchAsync(async (req: Request, res: Response) => {
+  const result = await AuthService.getMe(req.user!.id);
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: "User retrieved successfully",
-    data: req.user,
+    data: result,
   });
 });
 
