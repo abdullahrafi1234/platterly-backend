@@ -19,7 +19,16 @@ const loginSchema = z.object({
   }),
 });
 
+const updateProfileSchema = z.object({
+  body: z.object({
+    name: z.string().min(2).optional(),
+    phone: z.string().optional(),
+    address: z.string().optional(),
+  }),
+});
+
 export const AuthValidation = {
   registerSchema,
   loginSchema,
+  updateProfileSchema,
 };
