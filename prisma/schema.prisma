@@ -1,16 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
-// generator client {
-//   provider = "prisma-client"
-//   output   = "../generated/prisma"
-// }
-
-// datasource db {
-//   provider = "postgresql"
-// }
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,6 +5,108 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(uuid())
+  name            String
+  email           String           @unique
+  password        String
+  role            Role             @default(CUSTOMER)
+  status          UserStatus       @default(ACTIVE)
+  phone           String?
+  address         String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  orders          Order[]
+  providerProfile ProviderProfile?
+  reviews         Review[]
+
+  @@map("users")
+}
+
+model ProviderProfile {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  businessName String
+  description  String?
+  logo         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  meals        Meal[]
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("provider_profiles")
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  meals     Meal[]
+
+  @@map("categories")
+}
+
+model Meal {
+  id          String          @id @default(uuid())
+  providerId  String
+  categoryId  String
+  name        String
+  description String?
+  price       Float
+  image       String?
+  isAvailable Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  category    Category        @relation(fields: [categoryId], references: [id])
+  provider    ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  orderItems  OrderItem[]
+  reviews     Review[]
+
+  @@map("meals")
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  customerId      String
+  status          OrderStatus @default(PLACED)
+  totalAmount     Float
+  deliveryAddress String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  paymentMethod   String      @default("COD")
+  paymentStatus   String      @default("PENDING")
+  items           OrderItem[]
+  customer        User        @relation(fields: [customerId], references: [id])
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id       String @id @default(uuid())
+  orderId  String
+  mealId   String
+  quantity Int
+  price    Float
+  meal     Meal   @relation(fields: [mealId], references: [id])
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("order_items")
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  customerId String
+  mealId     String
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now())
+  customer   User     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  meal       Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, mealId])
+  @@map("reviews")
 }
 
 enum Role {
@@ -37,111 +126,4 @@ enum OrderStatus {
   READY
   DELIVERED
   CANCELLED
-}
-
-model User {
-  id        String     @id @default(uuid())
-  name      String
-  email     String     @unique
-  password  String
-  role      Role       @default(CUSTOMER)
-  status    UserStatus @default(ACTIVE)
-  phone     String?
-  address   String?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-
-  providerProfile ProviderProfile?
-  orders          Order[]
-  reviews         Review[]
-
-  @@map("users")
-}
-
-model ProviderProfile {
-  id           String   @id @default(uuid())
-  userId       String   @unique
-  businessName String
-  description  String?
-  logo         String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  meals Meal[]
-
-  @@map("provider_profiles")
-}
-
-model Category {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-
-  meals Meal[]
-
-  @@map("categories")
-}
-
-model Meal {
-  id          String   @id @default(uuid())
-  providerId  String
-  categoryId  String
-  name        String
-  description String?
-  price       Float
-  image       String?
-  isAvailable Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  provider   ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
-  category   Category        @relation(fields: [categoryId], references: [id])
-  orderItems OrderItem[]
-  reviews    Review[]
-
-  @@map("meals")
-}
-
-model Order {
-  id              String      @id @default(uuid())
-  customerId      String
-  status          OrderStatus @default(PLACED)
-  totalAmount     Float
-  deliveryAddress String
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-
-  customer User        @relation(fields: [customerId], references: [id])
-  items    OrderItem[]
-
-  @@map("orders")
-}
-
-model OrderItem {
-  id       String @id @default(uuid())
-  orderId  String
-  mealId   String
-  quantity Int
-  price    Float
-
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  meal  Meal  @relation(fields: [mealId], references: [id])
-
-  @@map("order_items")
-}
-
-model Review {
-  id         String   @id @default(uuid())
-  customerId String
-  mealId     String
-  rating     Int
-  comment    String?
-  createdAt  DateTime @default(now())
-
-  customer User @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  meal     Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
-
-  @@unique([customerId, mealId])
-  @@map("reviews")
 }
