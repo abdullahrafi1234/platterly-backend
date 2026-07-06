@@ -25,7 +25,7 @@ Node.js · Express · TypeScript · PostgreSQL · Prisma · JWT · Zod
 ### Clone the repository
 
 \`\`\`bash
-git clone https://github.com/abdullahrafi1234/platterly-frontend.git
+git clone https://github.com/abdullahrafi1234/platterly-backend.git
 cd platterly-backend
 \`\`\`
 
